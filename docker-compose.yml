@@ -4,7 +4,10 @@ services:
   tmweb:
     image: httpd:alpine
     restart: unless-stopped
-    network_mode: host
+    networks:
+      - i2b2-net
+    ports:
+      - "10100:80"
     depends_on:
       - tmapp
     volumes:
@@ -13,6 +16,8 @@ services:
   tmapp:
     image: dennyverbeeck/transmart-app:etriks-v4.0
     restart: unless-stopped
+    networks:
+      - i2b2-net
     ports:
       - "127.0.0.1:8009:8009"
     depends_on:
@@ -29,25 +34,35 @@ services:
   tmgwava:
     image: dennyverbeeck/transmart-gwava:tmf-16.2
     restart: unless-stopped
+    networks:
+      - i2b2-net
   tmdb:
     image: dennyverbeeck/transmart-db:etriks-v4.0
     restart: unless-stopped
+    networks:
+      - i2b2-net
     ports:
-      - "127.0.0.1:5432:5432"
+      - "127.0.0.1:5434:5432"
     volumes:
       - "postgresdata:/var/lib/postgresql"
       - "postgreslogs:/var/log/postgresql"
   tmsolr:
     image: dennyverbeeck/transmart-solr:etriks-v4.0
     restart: unless-stopped
+    networks:
+      - i2b2-net
   tmrserve:
     image: dennyverbeeck/transmart-rserve:etriks-v4.0
     restart: unless-stopped
+    networks:
+      - i2b2-net
     volumes:
       - "apptmp:/tmp"
       - "appwebapps:/usr/local/tomcat/webapps"
   tmload:
     image: dennyverbeeck/transmart-load:etriks-v4.0
+    networks:
+      - i2b2-net
     depends_on:
       - tmdb
 
@@ -57,3 +72,6 @@ volumes:
   appwebapps:
   postgresdata:
   postgreslogs:
+
+networks:
+  i2b2-net:
